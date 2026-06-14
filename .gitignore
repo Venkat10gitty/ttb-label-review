@@ -20,6 +20,9 @@ Thumbs.db
 npm-debug.log*
 *.log
 
+# Local data store (file-backed persistence in dev/Railway)
+.data/
+
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts

@@ -4,6 +4,10 @@ An AI-powered prototype for alcohol beverage label compliance review, built for 
 
 **Live Demo:** <!-- Add your Vercel URL here after deployment -->
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/Venkat10gitty/ttb-label-review&env=ANTHROPIC_API_KEY&envDescription=Your+Anthropic+API+key+for+Claude+vision+analysis&envLink=https://console.anthropic.com/settings/api-keys)
+
+[![CI](https://github.com/Venkat10gitty/ttb-label-review/actions/workflows/ci.yml/badge.svg)](https://github.com/Venkat10gitty/ttb-label-review/actions/workflows/ci.yml)
+
 ---
 
 ## What It Does
@@ -143,22 +147,46 @@ Each type has its own required field set per TTB regulations:
 
 ---
 
-## Deployment (Vercel)
+## Deployment
 
-The fastest path to a public URL:
+### Option A — One-click (fastest, no CLI needed)
 
-```bash
-# Install Vercel CLI
-npm i -g vercel
+Click the **Deploy with Vercel** button at the top of this README.  
+It will ask for your `ANTHROPIC_API_KEY` and deploy automatically.
 
-# Deploy (follow the prompts)
-vercel
+### Option B — GitHub Actions auto-deploy (every push deploys)
 
-# Set your API key as an environment variable in Vercel
-vercel env add ANTHROPIC_API_KEY
-```
+Every push to `main` triggers the CI workflow (type check + build). To also auto-deploy to Vercel:
 
-Or use the Vercel dashboard: import the GitHub repo → add `ANTHROPIC_API_KEY` in Project Settings → Environment Variables.
+**Step 1 — Create a Vercel account and link the project**
+
+1. Go to [vercel.com](https://vercel.com) → sign in with GitHub
+2. Click **Add New Project** → import `ttb-label-review`
+3. Add `ANTHROPIC_API_KEY` under Environment Variables → click **Deploy**
+4. Note the URL — your app is live
+
+**Step 2 — Get your Vercel token**
+
+Go to [vercel.com/account/tokens](https://vercel.com/account/tokens) → create a new token → copy it.
+
+**Step 3 — Add GitHub Secrets**
+
+In your GitHub repo → **Settings → Secrets and variables → Actions → New repository secret**:
+
+| Secret name | Where to find it |
+|---|---|
+| `VERCEL_TOKEN` | The token you just created |
+
+That's it. The deploy workflow uses the token and reads project settings from `vercel.json`. Every push to `main` now deploys automatically.
+
+### Option C — Railway (best for persistent data)
+
+Railway runs the app as a persistent process so the in-memory store never resets:
+
+1. Go to [railway.app](https://railway.app) → sign in with GitHub
+2. **New Project → Deploy from GitHub repo** → select `ttb-label-review`
+3. Add `ANTHROPIC_API_KEY` under Variables
+4. Railway auto-detects Next.js and deploys — you get a public URL
 
 ---
 

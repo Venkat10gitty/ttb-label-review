@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { Plus, RefreshCw, Search, Filter, FileDown } from "lucide-react";
+import { Plus, RefreshCw, Search, Filter, FileDown, FlaskConical } from "lucide-react";
 import Header from "@/components/Header";
 import StatsBar from "@/components/StatsBar";
 import ApplicationCard from "@/components/ApplicationCard";
@@ -18,6 +18,7 @@ const STATUS_FILTERS: { label: string; value: ReviewStatus | "all" }[] = [
 
 export default function HomePage() {
   const [applications, setApplications] = useState<Application[]>([]);
+  const [loadingDemo, setLoadingDemo] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
@@ -60,6 +61,16 @@ export default function HomePage() {
     if (!confirm("Delete this application?")) return;
     await fetch(`/api/applications/${id}`, { method: "DELETE" });
     setApplications((prev) => prev.filter((a) => a.id !== id));
+  }
+
+  async function loadDemo() {
+    setLoadingDemo(true);
+    try {
+      await fetch("/api/demo", { method: "POST" });
+      await fetchApplications();
+    } finally {
+      setLoadingDemo(false);
+    }
   }
 
   function exportCSV() {
@@ -108,6 +119,17 @@ export default function HomePage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {applications.length === 0 && (
+              <button
+                onClick={loadDemo}
+                disabled={loadingDemo}
+                className="btn-secondary text-sm border-dashed"
+                title="Load sample applications to explore the UI"
+              >
+                <FlaskConical size={15} />
+                {loadingDemo ? "Loading..." : "Load Demo Data"}
+              </button>
+            )}
             <button onClick={exportCSV} className="btn-secondary text-sm">
               <FileDown size={15} />
               Export CSV
@@ -182,13 +204,23 @@ export default function HomePage() {
                 : "Try adjusting your search or filter criteria."}
             </p>
             {applications.length === 0 && (
-              <button
-                onClick={() => setShowModal(true)}
-                className="btn-primary mt-5 text-sm"
-              >
-                <Plus size={15} />
-                Submit First Application
-              </button>
+              <div className="flex items-center gap-3 mt-5">
+                <button
+                  onClick={loadDemo}
+                  disabled={loadingDemo}
+                  className="btn-secondary text-sm border-dashed"
+                >
+                  <FlaskConical size={15} />
+                  {loadingDemo ? "Loading..." : "Load Demo Data"}
+                </button>
+                <button
+                  onClick={() => setShowModal(true)}
+                  className="btn-primary text-sm"
+                >
+                  <Plus size={15} />
+                  New Application
+                </button>
+              </div>
             )}
           </div>
         ) : (

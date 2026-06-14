@@ -53,9 +53,16 @@ export async function POST(
       updatedAt: new Date().toISOString(),
     });
 
-    return NextResponse.json(
-      { error: "Analysis failed. Please check your API key and try again." },
-      { status: 500 }
-    );
+    const message = err instanceof Error ? err.message : String(err);
+    let userError = "Analysis failed. Please try again.";
+    if (message.includes("credit balance") || message.includes("too low")) {
+      userError = "Insufficient API credits. Please add credits at console.anthropic.com/settings/billing and try again.";
+    } else if (message.includes("401") || message.includes("authentication")) {
+      userError = "Invalid API key. Please check your ANTHROPIC_API_KEY in .env.local.";
+    } else if (message.includes("overloaded") || message.includes("529")) {
+      userError = "Claude API is temporarily overloaded. Please wait a moment and try again.";
+    }
+
+    return NextResponse.json({ error: userError }, { status: 500 });
   }
 }
